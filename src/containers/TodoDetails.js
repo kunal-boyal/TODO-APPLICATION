@@ -8,6 +8,7 @@ const TodoDetails = (props) => {
 
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
+    const [alert, setAlert] = useState(false)
 
     useEffect(() => {
         const todo = props.todos.find(todo => todo._id === props.currentTodoId)
@@ -20,7 +21,22 @@ const TodoDetails = (props) => {
     }
 
     const bodyEventHandler = (e) => {
-        setBody(e.target.value)
+        const characterLength = e.target.value.replace(/\s+/g, '').length
+        if (characterLength > 140) {
+            setAlert(true)
+        }
+        else {
+            setAlert(false)
+        }
+        let formattedValue = e.target.value.replace(/\s+/g, ' ')
+        formattedValue = formattedValue.split(' ')
+        for (let i = 0; i < formattedValue.length; i++) {
+            if (formattedValue[i].length > 30) {
+                formattedValue[i] = formattedValue[i].split('').splice(0, 30).join('')
+            }
+        }
+        formattedValue = formattedValue.join(' ')
+        setBody(formattedValue)
     }
 
     const handleSubmit = (e) => {
@@ -41,9 +57,10 @@ const TodoDetails = (props) => {
                 <Form.Group >
                     <Form.Control type="text" placeholder="Enter Body ..." onChange={bodyEventHandler} value={body} />
                 </Form.Group>
+                {alert ? <p style={{ color: 'red' }}>Only 140 characters are allowed </p> : null}
                 <Button variant="outline-warning" type="submit">
                     Edit Todo
-            </Button>
+                </Button>
             </Form>
         </React.Fragment>
     );
